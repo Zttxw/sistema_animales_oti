@@ -1,0 +1,15 @@
+# Backend (Laravel)
+mascotas-OTI/.env
+mascotas-OTI/vendor/
+mascotas-OTI/node_modules/
+mascotas-OTI/storage/*.key
+
+# Frontend (React)
+mascotas-frontend/node_modules/
+mascotas-frontend/build/
+mascotas-frontend/.env
+
+# General
+.env
+.DS_Store
+Thumbs.db
