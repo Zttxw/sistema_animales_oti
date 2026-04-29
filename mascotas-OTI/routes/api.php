@@ -141,6 +141,9 @@ Route::prefix('adoptions')->name('adoptions.')->group(function () {
 // ══════════════════════════════════════════════════════════════════════════
 Route::middleware('auth:sanctum')->group(function () {
 
+    // ── MÓDULO: SUBIDA DE ARCHIVOS ───────────────────────────────────────
+    Route::post('upload', [\App\Http\Controllers\UploadController::class, 'store'])->name('upload.store');
+
     // ── MÓDULO: USUARIOS ─────────────────────────────────────────────────
     Route::prefix('users')->name('users.')->group(function () {
             Route::get('/',                     [UserController::class, 'index'])->name('index');

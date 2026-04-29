@@ -17,6 +17,8 @@ class AdoptionController extends Controller
     {
         $adoptions = Adoption::with(['animal.species', 'animal.breed', 'adopter', 'reviewer'])
             ->when($request->status, fn($q) => $q->where('status', $request->status))
+            ->when($request->species_id, fn($q) => $q->whereHas('animal', fn($q2) => $q2->where('species_id', $request->species_id)))
+            ->when($request->breed_id, fn($q) => $q->whereHas('animal', fn($q2) => $q2->where('breed_id', $request->breed_id)))
             ->orderByDesc('created_at')
             ->paginate(15);
 
@@ -36,13 +38,25 @@ class AdoptionController extends Controller
             'description'  => 'nullable|string',
             'requirements' => 'nullable|string',
             'contact'      => 'nullable|string|max:150',
+            'photo_url'    => 'nullable|url|max:500',
         ]);
 
         DB::transaction(function () use ($data) {
 
             $animal = Animal::findOrFail($data['animal_id']);
+            
+            if (!empty($data['photo_url'])) {
+                $animal->photos()->create(['url' => $data['photo_url'], 'is_cover' => false]);
+            }
 
-            Adoption::create(array_merge($data, ['status' => 'AVAILABLE']));
+            Adoption::create([
+                'animal_id' => $data['animal_id'],
+                'reason' => $data['reason'] ?? null,
+                'description' => $data['description'] ?? null,
+                'requirements' => $data['requirements'] ?? null,
+                'contact' => $data['contact'] ?? null,
+                'status' => 'AVAILABLE'
+            ]);
 
             $animal->update(['status' => 'FOR_ADOPTION']);
 
